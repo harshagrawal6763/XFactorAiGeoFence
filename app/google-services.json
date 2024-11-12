@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "50869003260",
+    "project_id": "geofence-38aaa",
+    "storage_bucket": "geofence-38aaa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:50869003260:android:eb7b94ff20e6d610344879",
+        "android_client_info": {
+          "package_name": "com.harsh.geofence"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeXmErdP_g9sQ9jHwqZ6pZKVsiqeL5dBc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ImageCrop" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.CropApp" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand color. -->
+
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/white</item>
+        <!-- Customize your theme here. -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- bezel image view style -->
+        <!--        <item name="bezelImageViewStyle">@style/BezelImageView</item>-->
+
+        <item name="colorControlNormal">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/white</item>
+
+        <item name="android:windowLightStatusBar">true</item>-->
+    </style>
+
+</resources>
