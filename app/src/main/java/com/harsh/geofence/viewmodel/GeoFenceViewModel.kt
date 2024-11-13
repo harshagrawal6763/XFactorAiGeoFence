@@ -5,6 +5,7 @@ import android.location.Location
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.LocationRequest
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -13,6 +14,9 @@ import com.google.firebase.ktx.Firebase
 import com.harsh.geofence.db.entity.EventDataEntity
 import com.harsh.geofence.model.GeoEvent
 import com.harsh.geofence.utils.convertLongToTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class GeoFenceViewModel : ViewModel() {
@@ -35,15 +39,15 @@ class GeoFenceViewModel : ViewModel() {
         newEvent.time = geoEvent.time
         newEvent.eventName = when (geoEvent.eventType) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
-                "GEOFENCE_TRANSITION_ENTER"
+                "GeoFence Entered"
             }
 
             Geofence.GEOFENCE_TRANSITION_DWELL -> {
-                "GEOFENCE_TRANSITION_DWELL"
+                "GeoFence Stayed In Area"
             }
 
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
-                "GEOFENCE_TRANSITION_EXIT"
+                "GeoFence Exited"
             }
 
             else -> {
@@ -51,12 +55,16 @@ class GeoFenceViewModel : ViewModel() {
             }
         }
 
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                eventRepository.updateEventData(newEvent)
 
-        eventRepository.updateEventData(newEvent)
-
-        logFirebaseEvent(newEvent)
-
-        geoEvents.value = newEvent
+                withContext(Dispatchers.Main){
+                    geoEvents.value = newEvent
+                }
+                logFirebaseEvent(newEvent)
+            }
+        }
     }
 
     private fun logFirebaseEvent(newEvent:EventDataEntity) {

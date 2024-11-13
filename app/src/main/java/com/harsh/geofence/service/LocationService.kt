@@ -20,8 +20,7 @@ import com.google.android.gms.location.LocationServices
 import com.harsh.geofence.GeoFenceApplication
 import com.harsh.geofence.reciever.GeofenceHelper
 import com.harsh.geofence.R
-import com.harsh.geofence.consts.AppConsts
-import com.harsh.geofence.view.LandingFragment
+import com.harsh.geofence.consts.GeoConsts
 import com.harsh.geofence.view.LandingFragment.Companion.GEOFENCE_ID
 import com.harsh.geofence.view.LandingFragment.Companion.GEOFENCE_RADIUS
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
@@ -40,7 +39,7 @@ class LocationService : Service() {
     private val geofenceRequest: GeofencingRequest by lazy {
         val geofence = Geofence.Builder()
             .setRequestId(GEOFENCE_ID)
-            .setCircularRegion(AppConsts.defaultLat, AppConsts.defaultLong, GEOFENCE_RADIUS)  // Example LatLng and radius of 100 meters
+            .setCircularRegion(GeoConsts.defaultLat, GeoConsts.defaultLong, GEOFENCE_RADIUS)  // Example LatLng and radius of 100 meters
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
             .build()

@@ -45,7 +45,4 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
     }
 
-    companion object {
-        private const val TAG = "GeoFenceBroadcastReceiver"
-    }
 }

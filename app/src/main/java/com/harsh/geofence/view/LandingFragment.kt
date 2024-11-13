@@ -2,7 +2,6 @@ package com.harsh.geofence.view
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.PendingIntent
 import android.content.IntentSender
@@ -36,8 +35,10 @@ import com.google.android.gms.tasks.Task
 import com.harsh.geofence.GeoFenceApplication
 
 import com.harsh.geofence.R
+import com.harsh.geofence.consts.GeoConsts.GEOFENCE_ID
+import com.harsh.geofence.consts.GeoConsts.GEOFENCE_RADIUS
 
-import com.harsh.geofence.consts.AppConsts.latLng
+import com.harsh.geofence.consts.GeoConsts.latLng
 import com.harsh.geofence.reciever.GeofenceHelper
 import com.harsh.geofence.utils.hasPermissions
 import com.harsh.geofence.utils.permissions
@@ -275,8 +276,7 @@ class LandingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
 
     companion object {
         private const val TAG = "LandingFragment"
-        const val GEOFENCE_RADIUS = 200f
-        const val GEOFENCE_ID = "MyGeofenceService"
+
 
     }
 }
