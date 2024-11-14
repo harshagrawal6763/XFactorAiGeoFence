@@ -27,7 +27,7 @@ open class GeoFenceViewModel : ViewModel() {
     val analytics: FirebaseAnalytics by lazy {
         Firebase.analytics
     }
-    val eventRepository : EventDataRepository by inject(EventDataRepository::class.java)
+    val eventRepository: EventDataRepository = EventDataRepository(EventLocalDataSource())
     fun sendError(errorMessage: String) {
         error.value = errorMessage
     }
