@@ -1,6 +1,7 @@
 package com.harsh.geofence.db.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -22,4 +23,7 @@ interface EventDataDao {
 
     @Query("DELETE FROM event_data")
     fun deleteEventData()
+
+    @Delete
+    fun deleteEventData(eventDataEntity: EventDataEntity)
 }

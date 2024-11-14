@@ -12,7 +12,7 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.maps.model.LatLng
 
 
-class GeofenceHelper(context: Context) : ContextWrapper(context) {
+open class GeofenceHelper(context: Context){
     fun getGeofencingRequest(geofence: Geofence?): GeofencingRequest {
         return GeofencingRequest.Builder()
             .addGeofence(geofence!!)

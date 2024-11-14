@@ -3,15 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_geo_fence.xml"
-    app:startDestination="@id/landingFragment">
+    app:startDestination="@id/selectionFragment">
 
     <fragment
         android:id="@+id/landingFragment"
-        android:name="com.harsh.geofence.view.LandingFragment"
+        android:name="com.harsh.geofence.view.GoogleMapsFragment"
         android:label="LandingFragment" />
     <fragment
         android:id="@+id/serviceLocationFragment"
         android:name="com.harsh.geofence.view.ServiceLocationFragment"
         android:label="fragment_service_location"
         tools:layout="@layout/fragment_service_location" />
+    <fragment
+        android:id="@+id/selectionFragment"
+        android:name="com.harsh.geofence.view.SelectionFragment"
+        android:label="fragment_selection"
+        tools:layout="@layout/fragment_selection" />
+    <action
+        android:id="@+id/action_global_landingFragment"
+        app:destination="@id/landingFragment" />
+    <action
+        android:id="@+id/action_global_serviceLocationFragment"
+        app:destination="@id/serviceLocationFragment" />
 </navigation>

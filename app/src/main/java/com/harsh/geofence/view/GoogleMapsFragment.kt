@@ -46,7 +46,7 @@ import com.harsh.geofence.utils.permissionsAll
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
 
 
-class LandingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
     private var mMap: GoogleMap? = null
     private var geofencingClient: GeofencingClient? = null
     private lateinit var geofenceHelper: GeofenceHelper
@@ -66,18 +66,21 @@ class LandingFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClick
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.fragment_landing, container, false)
+        return inflater.inflate(R.layout.fragment_maps, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initViewModel()
-
         observeGeoFenceViewModel()
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
+        initGeoFenceData()
+    }
 
+    private fun initGeoFenceData() {
         geofencingClient = activity?.let { LocationServices.getGeofencingClient(it) }
         this.context?.let {
             geofenceHelper = GeofenceHelper(it)

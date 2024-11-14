@@ -21,8 +21,9 @@ import com.harsh.geofence.GeoFenceApplication
 import com.harsh.geofence.reciever.GeofenceHelper
 import com.harsh.geofence.R
 import com.harsh.geofence.consts.GeoConsts
-import com.harsh.geofence.view.LandingFragment.Companion.GEOFENCE_ID
-import com.harsh.geofence.view.LandingFragment.Companion.GEOFENCE_RADIUS
+import com.harsh.geofence.consts.GeoConsts.GEOFENCE_ID
+import com.harsh.geofence.consts.GeoConsts.GEOFENCE_RADIUS
+
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
 
 class LocationService : Service() {
@@ -80,7 +81,7 @@ class LocationService : Service() {
             }
         }
 
-        // Register for geofence events
+
 
         // Start receiving location updates
         startLocationUpdates(locationRequest)
@@ -108,9 +109,11 @@ class LocationService : Service() {
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Create a notification for the foreground service
+
+        // Register for geofence events
         registerGeofence()
 
+        // Create a notification for the foreground service
         val notification = NotificationCompat.Builder(this, "location_channel")
             .setContentTitle("Location Service")
             .setContentText("Tracking your location in the background")

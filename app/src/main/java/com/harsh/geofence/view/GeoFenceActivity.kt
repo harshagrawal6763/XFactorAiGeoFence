@@ -11,7 +11,7 @@ class GeoFenceActivity : AppCompatActivity() {
         findNavController(R.id.nav_host_container)
     }
 
-    private fun getNavigationController(): NavController {
+    fun getNavigationController(): NavController {
         return navController.value
     }
 

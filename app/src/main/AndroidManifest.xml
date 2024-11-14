@@ -23,7 +23,7 @@
         <activity
             android:name=".view.GeoFenceActivity"
             android:exported="true"
-            android:theme="@style/Theme.CropApp">
+            android:theme="@style/Theme.GeoFence">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

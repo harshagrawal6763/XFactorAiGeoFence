@@ -1,4 +1,4 @@
-package com.harsh.imagecrop
+package com.harsh.geofence
 
 import org.junit.Test
 

@@ -8,7 +8,7 @@ import android.os.Build
 import com.harsh.geofence.db.DbManager
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
 
-class GeoFenceApplication:Application() {
+open class GeoFenceApplication:Application() {
     var geoFenceViewModel : GeoFenceViewModel?=null
     override fun onCreate() {
         super.onCreate()

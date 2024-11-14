@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class GeoFenceViewModel : ViewModel() {
+open class GeoFenceViewModel : ViewModel() {
     var geoEvents: MutableLiveData<EventDataEntity> = MutableLiveData()
     var error: MutableLiveData<String> = MutableLiveData()
     var location: MutableLiveData<Location> = MutableLiveData()

@@ -17,6 +17,10 @@ object DbManager {
             .build()
     }
 
+    fun close(){
+        applicationDatabase.close()
+    }
+
     fun getEventDataDao(): EventDataDao {
         return applicationDatabase.getEventDataDao()
     }

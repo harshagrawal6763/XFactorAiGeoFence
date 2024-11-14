@@ -3,7 +3,7 @@
 
     <style name="Theme.ImageCrop" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.CropApp" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="Theme.GeoFence" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Primary brand color. -->
 
         <item name="colorOnPrimary">@color/white</item>

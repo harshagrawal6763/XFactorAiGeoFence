@@ -73,13 +73,10 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.navigation.testing)
+    implementation(libs.androidx.espresso.intents)
+
+
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // glide
@@ -87,6 +84,8 @@ dependencies {
 
     //room database
     implementation ("androidx.room:room-runtime:2.6.1")
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.junit.jupiter)
     ksp ("androidx.room:room-compiler:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
@@ -96,4 +95,31 @@ dependencies {
 
     implementation(libs.play.services.location)
     implementation(libs.play.services.maps)
+
+    debugImplementation("androidx.fragment:fragment-testing-manifest:1.8.3")
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    androidTestImplementation(libs.androidx.fragment.testing)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.androidx.core.testing)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    // Mockito for Android Instrumentation Tests
+
+    // Mockito Kotlin (for better Kotlin compatibility)
+    testImplementation(libs.mockito.core) // latest version
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
+
+
+
+    implementation(libs.koin.android)
+
+
+
 }
