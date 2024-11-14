@@ -33,6 +33,7 @@ and other one where I would run a foreground service to update user's location.
 Solution Details
 
 Architecture pattern : MVVM
+
 Design Patterns used : Builder Design
 
 Geofence Functionality with Google Maps - User Flow
