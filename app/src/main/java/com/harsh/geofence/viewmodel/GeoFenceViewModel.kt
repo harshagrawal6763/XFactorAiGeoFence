@@ -17,7 +17,6 @@ import com.harsh.geofence.utils.convertLongToTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.java.KoinJavaComponent.inject
 
 
 open class GeoFenceViewModel : ViewModel() {
