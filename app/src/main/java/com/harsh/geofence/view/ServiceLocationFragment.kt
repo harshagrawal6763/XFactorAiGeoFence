@@ -2,6 +2,7 @@ package com.harsh.geofence.view
 
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.app.Activity.RESULT_OK
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.os.Build
@@ -13,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
@@ -29,6 +31,7 @@ import com.harsh.geofence.utils.hasPermissions
 import com.harsh.geofence.utils.permissions
 import com.harsh.geofence.utils.permissionsAll
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
+
 
 class ServiceLocationFragment : Fragment() {
 
@@ -163,10 +166,29 @@ class ServiceLocationFragment : Fragment() {
                 }
             }
             if (allPermissionGranted) {
+
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    requestMultiplePermissionLauncherBefore?.launch(arrayOf(
-                        ACCESS_BACKGROUND_LOCATION
-                    ))
+                    val dialogClickListener =
+                        DialogInterface.OnClickListener { dialog, which ->
+                            when (which) {
+                                DialogInterface.BUTTON_POSITIVE -> {
+                                    dialog.dismiss()
+                                    requestMultiplePermissionLauncherBefore?.launch(arrayOf(
+                                        ACCESS_BACKGROUND_LOCATION
+                                    ))
+                                }
+                                DialogInterface.BUTTON_NEGATIVE -> {
+                                    dialog.dismiss()
+                                    Toast.makeText(this.context,"Permission for location as Allow all the time is needed for GeoFencing",Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+
+                    val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
+                    builder?.setMessage(getString(R.string.please_grant_permission))
+                        ?.setPositiveButton(getString(R.string.common_ok), dialogClickListener)
+                        ?.setNegativeButton(getString(R.string.common_cancel), dialogClickListener)?.show()
                 }else{
                     checkIfGpsEnabledAndStartService()
                 }

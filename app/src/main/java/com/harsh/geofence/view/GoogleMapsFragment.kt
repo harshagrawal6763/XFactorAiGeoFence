@@ -49,7 +49,7 @@ import com.harsh.geofence.viewmodel.GeoFenceViewModel
 class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
     private var mMap: GoogleMap? = null
     private var geofencingClient: GeofencingClient? = null
-    private lateinit var geofenceHelper: GeofenceHelper
+    private var geofenceHelper: GeofenceHelper?=null
 
     private var geoFenceViewModel: GeoFenceViewModel? = null
     private var requestMultiplePermissionLauncher: ActivityResultLauncher<Array<String>?>? = null
@@ -194,26 +194,33 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
     }
 
 
+    var geoFence:Geofence?=null
 
     @SuppressLint("MissingPermission")
     private fun addGeofence(latLng: LatLng, radius: Float) {
-        val geofence: Geofence = geofenceHelper.getGeofence(
+        geoFence = geofenceHelper?.getGeofence(
             GEOFENCE_ID,
             latLng,
             radius,
             Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT
         )
-        val geofencingRequest: GeofencingRequest = geofenceHelper.getGeofencingRequest(geofence)
-        val pendingIntent: PendingIntent = geofenceHelper.geofencePendingIntent
+        val geofencingRequest: GeofencingRequest? = geofenceHelper?.getGeofencingRequest(geoFence)
+        val pendingIntent: PendingIntent? = geofenceHelper?.geofencePendingIntent
 
-        geofencingClient?.addGeofences(geofencingRequest, pendingIntent)
-            ?.addOnSuccessListener {
+        if (geofencingRequest != null) {
+            if (pendingIntent != null) {
+                geofencingClient?.addGeofences(geofencingRequest, pendingIntent)
+                    ?.addOnSuccessListener {
 
+                    }
+                    ?.addOnFailureListener { e ->
+                        val errorMessage: String? = geofenceHelper?.getErrorString(e)
+                        if (errorMessage != null) {
+                            geoFenceViewModel?.sendError(errorMessage)
+                        }
+                    }
             }
-            ?.addOnFailureListener { e ->
-                val errorMessage: String = geofenceHelper.getErrorString(e)
-                geoFenceViewModel?.sendError(errorMessage)
-            }
+        }
     }
 
     private fun addMarker(latLng: LatLng) {
@@ -276,6 +283,13 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
         }
     }
 
+    override fun onDestroy() {
+        mMap?.clear()
+        geofenceHelper?.geofencePendingIntent?.let { geofencingClient?.removeGeofences(it) }
+        geofenceHelper = null
+        geoFence = null
+        super.onDestroy()
+    }
 
     companion object {
         private const val TAG = "LandingFragment"

@@ -6,13 +6,33 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import com.harsh.geofence.db.DbManager
+import com.harsh.geofence.viewmodel.EventDataRepository
+import com.harsh.geofence.viewmodel.EventLocalDataSource
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.GlobalContext.startKoin
+import org.koin.dsl.module
 
 open class GeoFenceApplication:Application() {
-    var geoFenceViewModel : GeoFenceViewModel?=null
+
+
+
+    val appModule = module {
+        single { EventLocalDataSource() } // Singleton scope
+        single { EventDataRepository(get()) } // Singleton scope
+        single { GeoFenceViewModel() } // Singleton scope
+    }
+
+    val geoFenceViewModel : GeoFenceViewModel by inject()
+
     override fun onCreate() {
         super.onCreate()
-        geoFenceViewModel = GeoFenceViewModel()
+        startKoin {
+            androidContext(this@GeoFenceApplication)
+            modules(appModule)
+        }
+
         DbManager.initialize(this)
         createNotificationChannel()
     }

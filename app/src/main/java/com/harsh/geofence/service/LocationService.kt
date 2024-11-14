@@ -143,6 +143,7 @@ class LocationService : Service() {
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
         geofenceHelper?.geofencePendingIntent?.let { geofencingClient.removeGeofences(it) }
+        geofenceHelper = null
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 }
