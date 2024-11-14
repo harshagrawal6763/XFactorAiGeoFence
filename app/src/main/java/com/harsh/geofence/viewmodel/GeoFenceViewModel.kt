@@ -17,6 +17,7 @@ import com.harsh.geofence.utils.convertLongToTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.inject
 
 
 open class GeoFenceViewModel : ViewModel() {
@@ -26,7 +27,7 @@ open class GeoFenceViewModel : ViewModel() {
     val analytics: FirebaseAnalytics by lazy {
         Firebase.analytics
     }
-    var eventRepository = EventDataRepository(EventLocalDataSource())
+    val eventRepository : EventDataRepository by inject(EventDataRepository::class.java)
     fun sendError(errorMessage: String) {
         error.value = errorMessage
     }

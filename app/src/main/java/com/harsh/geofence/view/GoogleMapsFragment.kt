@@ -44,6 +44,7 @@ import com.harsh.geofence.utils.hasPermissions
 import com.harsh.geofence.utils.permissions
 import com.harsh.geofence.utils.permissionsAll
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
@@ -51,7 +52,7 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
     private var geofencingClient: GeofencingClient? = null
     private var geofenceHelper: GeofenceHelper?=null
 
-    private var geoFenceViewModel: GeoFenceViewModel? = null
+    private val geoFenceViewModel: GeoFenceViewModel by sharedViewModel()
     private var requestMultiplePermissionLauncher: ActivityResultLauncher<Array<String>?>? = null
     private var requestMultiplePermissionLauncherBefore: ActivityResultLauncher<Array<String>?>? = null
 
@@ -72,7 +73,7 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initViewModel()
+
         observeGeoFenceViewModel()
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
@@ -85,10 +86,6 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
         this.context?.let {
             geofenceHelper = GeofenceHelper(it)
         }
-    }
-
-    private fun initViewModel() {
-        geoFenceViewModel = (activity?.application as GeoFenceApplication).geoFenceViewModel
     }
 
 

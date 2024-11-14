@@ -24,13 +24,13 @@ import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsResponse
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
-import com.harsh.geofence.GeoFenceApplication
 import com.harsh.geofence.R
 import com.harsh.geofence.service.LocationService
 import com.harsh.geofence.utils.hasPermissions
 import com.harsh.geofence.utils.permissions
 import com.harsh.geofence.utils.permissionsAll
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class ServiceLocationFragment : Fragment() {
@@ -39,7 +39,7 @@ class ServiceLocationFragment : Fragment() {
     private var txtLatitude : AppCompatTextView?=null
     private var txtLongitude : AppCompatTextView?=null
 
-    private var geoFenceViewModel: GeoFenceViewModel? = null
+    private val geoFenceViewModel: GeoFenceViewModel by sharedViewModel()
     private var requestMultiplePermissionLauncher: ActivityResultLauncher<Array<String>?>? = null
     private var requestMultiplePermissionLauncherBefore: ActivityResultLauncher<Array<String>?>? = null
 
@@ -72,7 +72,7 @@ class ServiceLocationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViewModel()
+
         observeGeoFenceViewModel()
         btnLocation = view.findViewById(R.id.btnLocation)
         txtLatitude = view.findViewById(R.id.txtLatitude)
@@ -80,10 +80,6 @@ class ServiceLocationFragment : Fragment() {
         btnLocation?.setOnClickListener {
             checkLocationPermission()
         }
-    }
-
-    private fun initViewModel() {
-        geoFenceViewModel = (activity?.application as GeoFenceApplication).geoFenceViewModel
     }
 
 
