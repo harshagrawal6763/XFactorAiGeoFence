@@ -13,10 +13,19 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="testOnCreate()">
+      <SelectionState runConfigName="testErrorInvoke()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="testRegisterGeofence()">
+      <SelectionState runConfigName="testLocationUpdate()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="GeofenceBroadcastReceiverTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testReceiveError()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testValidGeoFenceEnter()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

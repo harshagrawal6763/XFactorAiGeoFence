@@ -64,6 +64,10 @@ Step-by-Step User Flow
 
 [View the gmap folder](https://github.com/harshagrawal6763/XFactorAiGeoFence/tree/main/gmap)
 
+This folder also contains a video that demonstrates the event trigger when the user enters the geofence.
+
+![Map Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/gMapVideo.mp4)
+
 
 
 Additional Notes
@@ -118,6 +122,9 @@ Step-by-Step User Flow
 
 [View the service folder](https://github.com/harshagrawal6763/XFactorAiGeoFence/tree/main/service)
 
+
+Room Database is used in this application to save the events that are triggered while the user enters/exists or stays in the fence.
+I have used room database as according to the case study document, it was suggested that we can use database to mimic api calls.
 
 For updating the default location and radius, please update com.harsh.geofence.consts.GeoConsts file. 
 Please update the location in case change is needed. I would set it to XFactr.Ai's default address for now.
