@@ -12,12 +12,17 @@ import com.google.android.gms.location.Priority
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.harsh.geofence.consts.GeoConsts
 import com.harsh.geofence.db.entity.EventDataEntity
 import com.harsh.geofence.model.GeoEvent
 import com.harsh.geofence.utils.convertLongToTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 
 open class GeoFenceViewModel : ViewModel() {
@@ -110,15 +115,70 @@ open class GeoFenceViewModel : ViewModel() {
 
 
 
-    fun updateLocation(location: Location?) {
+    fun updateLocation(location: Location?,addedFence:Boolean) {
         //the event location is sent by LocationService to display/update to the UI
         viewModelScope.launch {
             withContext(Dispatchers.Main){
                 this@GeoFenceViewModel.location.value = location
             }
+
+            if (!addedFence && location?.longitude!=null){
+                GeoConsts.GEOFENCE_RADIUS.toDouble().let {
+                    val isInNBounds = isWithinRadius(location.latitude,location.longitude,GeoConsts.defaultLat,GeoConsts.defaultLong,
+                        it
+                    )
+                    val newEvent = EventDataEntity()
+                    newEvent.lat = location.latitude
+                    newEvent.longitude = location.longitude
+                    newEvent.time = System.currentTimeMillis()
+                    //we can either add an enter event or an exit event.
+                    if(isInNBounds){
+                        //if it is in bounds we can add location event as in
+                        //this would increase the no of events in database or api call, so need to set a threshold also
+                        newEvent.eventTypeId = Geofence.GEOFENCE_TRANSITION_ENTER
+                        newEvent.eventName = "GeoFence Entered"
+
+
+                    }else{
+                        newEvent.eventTypeId = Geofence.GEOFENCE_TRANSITION_EXIT
+                        newEvent.eventName = "GeoFence Exited"
+
+                    }
+                    withContext(Dispatchers.IO){
+                        eventRepository.updateEventData(newEvent)
+                    }
+                    withContext(Dispatchers.Main){
+                        geoEvents.value = newEvent
+                    }
+                }
+            }
         }
 
     }
+
+
+
+    private fun isWithinRadius(
+        targetLat: Double,
+        targetLon: Double,
+        fixedLat: Double,
+        fixedLon: Double,
+        radiusInMeters: Double
+    ): Boolean {
+        val earthRadius = 6371000.0 // Earth's radius in meters
+
+        val dLat = Math.toRadians(targetLat - fixedLat)
+        val dLon = Math.toRadians(targetLon - fixedLon)
+
+        val a = sin(dLat / 2) * sin(dLat / 2) +
+                cos(Math.toRadians(fixedLat)) * cos(Math.toRadians(targetLat)) *
+                sin(dLon / 2) * sin(dLon / 2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        val distance = earthRadius * c
+        return distance <= radiusInMeters
+    }
+
 
     fun getLocationRequest(): LocationRequest {
         val locationRequest = LocationRequest.Builder(

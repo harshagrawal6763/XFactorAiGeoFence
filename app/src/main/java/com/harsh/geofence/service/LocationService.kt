@@ -17,6 +17,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.harsh.geofence.GeoFenceApplication
 import com.harsh.geofence.reciever.GeofenceHelper
 import com.harsh.geofence.R
@@ -45,7 +46,9 @@ class LocationService : Service() {
     var viewModel: GeoFenceViewModel?=null
 
     //the helper used for generating geofencing request
-    var geofenceHelper : GeofenceHelper?=null
+    private var geofenceHelper : GeofenceHelper?=null
+
+    var geoFenceAdded : Boolean?=false
 
     //the geofencing client that will add the geofence
     private lateinit var geofencingClient: GeofencingClient
@@ -87,11 +90,12 @@ class LocationService : Service() {
         }
 
         // Create a LocationRequest for periodic location updates
-        val locationRequest = LocationRequest.create().apply {
-            interval = 10000 // Update every 10 seconds
-            fastestInterval = 5000 // Fastest interval for location updates
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, // Set the priority
+            10000L // Interval in milliseconds
+        ).apply {
+            setMinUpdateIntervalMillis(5000L) // Fastest interval
+        }.build()
 
         // Create a LocationCallback to handle location updates
         locationCallback = object : LocationCallback() {
@@ -99,8 +103,9 @@ class LocationService : Service() {
                 super.onLocationResult(locationResult)
                 locationResult.let {
                     val location = it.lastLocation
-                    viewModel?.updateLocation(location)
                     // Use the location data (for example, log or send to a server)
+                    viewModel?.updateLocation(location,geoFenceAdded?:false)
+
                 }
             }
         }
@@ -123,12 +128,16 @@ class LocationService : Service() {
         // Register the geofence with GeofencingClient
         //the suppress lint is added as the permission
         // check will be done by fragment and then the service could run
+
         geofenceHelper?.geofencePendingIntent?.let {
+            geoFenceAdded =  false
             geofencingClient.addGeofences(geofenceRequest, it).run {
                 addOnSuccessListener {
+                    geoFenceAdded = true
                     Toast.makeText(applicationContext, "Geofence Added", Toast.LENGTH_SHORT).show()
                 }
                 addOnFailureListener {
+                    geoFenceAdded = false
                     Toast.makeText(applicationContext, "Failed to add Geofence", Toast.LENGTH_SHORT).show()
                 }
             }

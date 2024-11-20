@@ -95,7 +95,7 @@ class GeoFenceViewModelTest {
             latitude = 12.345
             longitude = 67.890
         }
-        viewModel.updateLocation(location)
+        viewModel.updateLocation(location,true)
         // Verify LiveData is updated with the new location
         Mockito.verify(mockObserverLocation).onChanged(location)
     }
