@@ -60,8 +60,9 @@ Step-by-Step User Flow
 9. Ongoing Geofence Monitoring:
     - This approach does not require a continuous foreground service. Instead, Google Maps maintains location updates, and the geofence is managed through the Google Location API, minimizing battery usage.
 
-![1](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/11.jpeg)
-![2](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/12.jpeg)
+![Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/GoogleMapsFlow.png)
+
+![1](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/11.jpeg) ![2](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/12.jpeg) ![3](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/13.jpeg) ![4](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/14.jpeg) ![5](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/15.jpeg) ![6](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/16.jpeg)
 
 
 Additional Notes
