@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.Priority
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -26,11 +27,26 @@ open class GeoFenceViewModel : ViewModel() {
     val analytics: FirebaseAnalytics by lazy {
         Firebase.analytics
     }
-    val eventRepository: EventDataRepository = EventDataRepository(EventLocalDataSource())
+    var eventRepository: EventDataRepository = EventDataRepository(EventLocalDataSource())
+
     fun sendError(errorMessage: String) {
-        error.value = errorMessage
+        //if the geofence event is unable to load location due to any reason
+        //error is displayed
+        viewModelScope.launch {
+            withContext(Dispatchers.Main){
+                error.value = errorMessage
+            }
+
+        }
     }
 
+    /*save the event that is triggered by the broadcast reciever
+    * A new entity as per the requirement is created from GeoEvent
+    * Based on the eventType, the event name is given
+    * the data is saved to database or API call is done based on the scenario/connectivity
+    * The UI is updated about the event and geoEvents.value is updated that can be observed by Fragment/Activity
+    * The event data is also sent to Firebase Analytics for logging
+    * */
     fun triggerEvent(geoEvent: GeoEvent) {
         val newEvent = EventDataEntity()
         newEvent.eventTypeId = geoEvent.eventType
@@ -57,11 +73,16 @@ open class GeoFenceViewModel : ViewModel() {
 
         viewModelScope.launch {
             withContext(Dispatchers.IO){
+                //the data is saved to database or API call is done based on the scenario/connectivity
                 eventRepository.updateEventData(newEvent)
 
                 withContext(Dispatchers.Main){
+                    //The UI is updated about the event and
+                    // geoEvents.value is updated that can be observed by Fragment/Activity
                     geoEvents.value = newEvent
                 }
+
+                //The event data is sent to Firebase Analytics for logging
                 logFirebaseEvent(newEvent)
             }
         }
@@ -70,29 +91,43 @@ open class GeoFenceViewModel : ViewModel() {
     private fun logFirebaseEvent(newEvent:EventDataEntity) {
         val bundle = Bundle()
         newEvent.time?.let {
+            //get the millis and convert it to a date
             val time = convertLongToTime(it)
+            //put the date string into the bundle
             bundle.putString("event_time",time)
         }
+        //put the event name into  bundle
         bundle.putString("event_name",newEvent.eventName)
 
         newEvent.eventTypeId?.let {
+            //put the event type into bundle
             bundle.putInt("event_type", it)
         }
+
+        //log the event to firebase
         analytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT,bundle)
     }
 
 
 
     fun updateLocation(location: Location?) {
-        this.location.value = location
+        //the event location is sent by LocationService to display/update to the UI
+        viewModelScope.launch {
+            withContext(Dispatchers.Main){
+                this@GeoFenceViewModel.location.value = location
+            }
+        }
+
     }
 
     fun getLocationRequest(): LocationRequest {
-        return LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 10000 // Set interval as needed
-            fastestInterval = 5000
-        }
+        val locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY, // Set the priority
+            10000L // Interval in milliseconds
+        ).apply {
+            setMinUpdateIntervalMillis(5000L) // Fastest interval
+        }.build()
+        return locationRequest
 
     }
 }

@@ -33,11 +33,16 @@ open class GeoFenceApplication:Application() {
             modules(appModule)
         }
 
+
+        //init the db
         DbManager.initialize(this)
+
+        //add notification channel
         createNotificationChannel()
     }
 
 
+    //creates the notification channel
     private fun createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(

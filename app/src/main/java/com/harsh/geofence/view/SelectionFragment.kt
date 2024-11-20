@@ -13,8 +13,8 @@ import com.harsh.geofence.R
 
 class SelectionFragment : Fragment() {
 
-    var btnGoogleMapsApproach:AppCompatButton?=null
-    var btnServiceApproach:AppCompatButton?=null
+    private var btnGoogleMapsApproach:AppCompatButton?=null
+    private var btnServiceApproach:AppCompatButton?=null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,14 +32,19 @@ class SelectionFragment : Fragment() {
         btnGoogleMapsApproach = view.findViewById(R.id.btnGoogleMapsApproach)
         btnServiceApproach = view.findViewById(R.id.btnServiceApproach)
 
+        //set the click listeners
         setListeners()
     }
 
     private fun setListeners() {
+        //if user clicks on btnGoogleMapsApproach it will navigate to GoogleMapsFragment
+        //this approach takes help of Google Maps to show the geofence as well as for location updates
         btnGoogleMapsApproach?.setOnClickListener {
             findNavController().navigate(R.id.action_global_landingFragment)
         }
 
+        //if user clicks on btnServiceApproach it will navigate to ServiceLocationFragment
+        //this approach takes help of LocationService to set the geofence and for location updates
         btnServiceApproach?.setOnClickListener {
             findNavController().navigate(R.id.action_global_serviceLocationFragment)
         }

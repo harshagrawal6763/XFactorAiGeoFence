@@ -1,25 +1,5 @@
 # XFactorAiGeoFence
 
-What is geofencing?
-
-Geofencing is a location-based technology that allows applications to define virtual boundaries around a specific geographic area. 
-When a device with the app enters, exits, or stays within this predefined area, 
-it triggers an action, such as sending a notification, 
-logging data, or initiating a function in the app.
-
- How Geofencing Works
-1. Define a Geofence: Set up a geographic boundary, such as around a building, a park, or a store. Each geofence has a center(latitude and longitude) and a radius that determines its circular area.
-2. Monitor the Device's Location: The device’s GPS, Wi-Fi, or cellular data helps to track when it moves in and out of the geofence.
-3. Trigger an Action: When the device crosses the boundary, the app can execute an action. For example:
-    - Enter Event: Triggered when the device enters the geofence.
-    - Exit Event: Triggered when the device leaves the geofence.
-    - Dwell Event: Triggered if the device stays within the geofence for a specified period.
-
- Applications of Geofencing
-- Retail and Marketing: Sending promotions when customers are near a store.
-- Security and Access Control: Allowing entry or sending alerts based on proximity.
-- Fleet Management: Tracking vehicles within defined routes.
-- Smart Home Automation: Activating devices based on location, like turning on lights when approaching home.
 
 Now when i started thinking about the solution to develop the case study, i went through google's articles on how to implement the
 geofencing in Android. I found that there is a geofencing api which is a part of google's android gms library.
@@ -79,6 +59,10 @@ Step-by-Step User Flow
 
 9. Ongoing Geofence Monitoring:
     - This approach does not require a continuous foreground service. Instead, Google Maps maintains location updates, and the geofence is managed through the Google Location API, minimizing battery usage.
+
+![1](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/11.jpeg)
+![2](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/12.jpeg)
+
 
 Additional Notes
 - Location Customization: This flow provides users with full control to set their preferred geofence location, enhancing flexibility and usability.

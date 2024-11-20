@@ -4,10 +4,14 @@ import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.app.PendingIntent
+import android.content.DialogInterface
+import android.content.Intent
 import android.content.IntentSender
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.Geofence
@@ -32,7 +37,6 @@ import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
-import com.harsh.geofence.GeoFenceApplication
 
 import com.harsh.geofence.R
 import com.harsh.geofence.consts.GeoConsts.GEOFENCE_ID
@@ -51,6 +55,7 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
     private var mMap: GoogleMap? = null
     private var geofencingClient: GeofencingClient? = null
     private var geofenceHelper: GeofenceHelper?=null
+    var openedSettings : Boolean = false
 
     private val geoFenceViewModel: GeoFenceViewModel by sharedViewModel()
     private var requestMultiplePermissionLauncher: ActivityResultLauncher<Array<String>?>? = null
@@ -74,10 +79,15 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
         super.onViewCreated(view, savedInstanceState)
 
 
+        //observe view model
         observeGeoFenceViewModel()
 
+        //set map to the view and load it
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
+
+        //initialize the required data for geo fence
+        //this can be also done once permissions are accepted
         initGeoFenceData()
     }
 
@@ -90,31 +100,45 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
 
 
     private fun observeGeoFenceViewModel() {
-        geoFenceViewModel?.geoEvents?.observe(this.viewLifecycleOwner) {
+        geoFenceViewModel.geoEvents.observe(this.viewLifecycleOwner) {
             Toast.makeText(this.context, it?.eventName, Toast.LENGTH_SHORT).show()
         }
 
-        geoFenceViewModel?.error?.observe(this.viewLifecycleOwner) {
+        geoFenceViewModel.error.observe(this.viewLifecycleOwner) {
             Toast.makeText(this.context, it, Toast.LENGTH_SHORT).show()
         }
     }
 
 
     override fun onMapReady(googleMap: GoogleMap) {
+        //when google map is initiated get the instance of it
         mMap = googleMap
-        val latLng = latLng
+
+        //move the camera to the default lat long
         mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+
+        //set long click listener on the map
         mMap?.setOnMapLongClickListener(this)
-        checkLocationPermission()
+
+        //check for permissions
+        checkPermission()
     }
 
     @SuppressLint("MissingPermission")
     //added this as the check for permission is already added
-    private fun checkLocationPermission() {
+    private fun checkPermission(openedOnce:Boolean=false) {
+        //here permissions all refers to all permissions
+        //if the permissions are not granted, first we will
+        //demand for only permissions that is
+        // ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,POST_NOTIFICATIONS
+
         if (!hasPermissions(permissionsAll)) {
-            requestMultiplePermissionLauncher?.launch(permissions)
+            if (!openedOnce){
+                requestMultiplePermissionLauncher?.launch(permissions)
+            }
             return
         }else{
+            //if permissions are already granted, check for gps
             checkIfGpsEnabledAndStartService()
         }
     }
@@ -125,7 +149,7 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
             return
         }else{
             if (mMap?.isMyLocationEnabled == false){
-                checkLocationPermission()
+                checkPermission()
             }else{
                 handleMapLongClick(latLng)
             }
@@ -144,16 +168,20 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
         addGeofence(latLng, GEOFENCE_RADIUS)
     }
 
+    /*this function checks if the gps is enabled or not
+   * if the gps is enabled, it starts the service and if not
+   * it asks the users to enable the GPS
+   * */
     private fun checkIfGpsEnabledAndStartService() {
-        val locationRequest = geoFenceViewModel?.getLocationRequest()
+        val locationRequest = geoFenceViewModel.getLocationRequest()
 
-        val builder = locationRequest?.let {
+        val builder = locationRequest.let {
             LocationSettingsRequest.Builder()
                 .addLocationRequest(it)
         }
         val settingsClient: SettingsClient? = activity?.let { LocationServices.getSettingsClient(it) }
-        val task: Task<LocationSettingsResponse>? = builder?.build()
-            ?.let { settingsClient?.checkLocationSettings(it) }
+        val task: Task<LocationSettingsResponse>? = builder.build()
+            .let { settingsClient?.checkLocationSettings(it) }
 
         task?.addOnSuccessListener {
             // Location settings are already enabled
@@ -173,7 +201,11 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
 
     @SuppressLint("MissingPermission")
     private fun startLocationService() {
+        //enable the current location icon on google maps
         mMap?.isMyLocationEnabled =  true
+
+        //also notify the user about map long press
+        Toast.makeText(context,"Please long press on map to enable gps around that area.",Toast.LENGTH_SHORT).show()
     }
 
     // Result handling for the location dialog
@@ -186,7 +218,7 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
         } else {
             // User did not enable location services
             // Handle accordingly, e.g., show a message
-            geoFenceViewModel?.sendError("Location was not enabled")
+            geoFenceViewModel.sendError("Location was not enabled")
         }
     }
 
@@ -195,25 +227,31 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
 
     @SuppressLint("MissingPermission")
     private fun addGeofence(latLng: LatLng, radius: Float) {
+        //getting the geofence
         geoFence = geofenceHelper?.getGeofence(
             GEOFENCE_ID,
             latLng,
             radius,
             Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_DWELL or Geofence.GEOFENCE_TRANSITION_EXIT
         )
+
+        //getting the geofence request
         val geofencingRequest: GeofencingRequest? = geofenceHelper?.getGeofencingRequest(geoFence)
+
+        //get the geofencePendingIntent which will trigger the GeofenceBroadcastReceiver
         val pendingIntent: PendingIntent? = geofenceHelper?.geofencePendingIntent
 
         if (geofencingRequest != null) {
             if (pendingIntent != null) {
+                //add the geofence with help of geofencingClient
                 geofencingClient?.addGeofences(geofencingRequest, pendingIntent)
                     ?.addOnSuccessListener {
-
+                        Toast.makeText(context,"Geo Fence Added",Toast.LENGTH_SHORT).show()
                     }
                     ?.addOnFailureListener { e ->
                         val errorMessage: String? = geofenceHelper?.getErrorString(e)
                         if (errorMessage != null) {
-                            geoFenceViewModel?.sendError(errorMessage)
+                            geoFenceViewModel.sendError(errorMessage)
                         }
                     }
             }
@@ -221,11 +259,14 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
     }
 
     private fun addMarker(latLng: LatLng) {
+        //add the marker to the map
         val markerOptions = MarkerOptions().position(latLng)
         mMap?.addMarker(markerOptions)
     }
 
     private fun addCircle(latLng: LatLng, radius: Float) {
+        //add a circle on the map with the radius specified
+        //this will draw a circle around the latLng to help user see if s(he) is entering the area
         val circleOptions = CircleOptions()
         circleOptions.center(latLng)
         circleOptions.radius(radius.toDouble())
@@ -239,32 +280,58 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
 
     @SuppressLint("MissingPermission")
     private fun initMultiplePermissionRequest() {
+        /*this function checks if user has given permissions
+            if already granted it will check for ACCESS_BACKGROUND_LOCATION permission check
+         * */
         requestMultiplePermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
+            //check for permissions
             var allPermissionGranted = true
             permissions.forEach {
                 if (!it.value) {
                     allPermissionGranted = false
                 }
             }
+
             if (allPermissionGranted) {
+                //if already granted it will check for ACCESS_BACKGROUND_LOCATION permission check
+                //it is not required for below 29
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    requestMultiplePermissionLauncherBefore?.launch(arrayOf(ACCESS_BACKGROUND_LOCATION))
+                    val dialogClickListener =
+                        DialogInterface.OnClickListener { dialog, which ->
+                            when (which) {
+                                DialogInterface.BUTTON_POSITIVE -> {
+                                    dialog.dismiss()
+                                    requestMultiplePermissionLauncherBefore?.launch(arrayOf(
+                                        ACCESS_BACKGROUND_LOCATION
+                                    ))
+                                }
+                                DialogInterface.BUTTON_NEGATIVE -> {
+                                    dialog.dismiss()
+                                    geoFenceViewModel.sendError("Permission for location as Allow all the time is needed for GeoFencing")
+                                }
+                            }
+                        }
+
+                    val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
+                    builder?.setMessage(getString(R.string.please_grant_permission))
+                        ?.setPositiveButton(getString(R.string.common_ok), dialogClickListener)
+                        ?.setNegativeButton(getString(R.string.common_cancel), dialogClickListener)?.show()
                 }else{
+                    //check for gps active or not
                     checkIfGpsEnabledAndStartService()
                 }
             } else {
-                // Permission was denied. Display an error message.
-                Toast.makeText(
-                    context,
-                    getString(R.string.txt_permission_denied_title),
-                    Toast.LENGTH_LONG
-                ).show()
+                //if the permissions are denied constantly, it will
+                //default give false
+                handlePermissionDenied()
 
             }
         }
 
+
+        //this is required when requesting background location updates
         requestMultiplePermissionLauncherBefore = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
@@ -275,22 +342,66 @@ class GoogleMapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMapLongCl
                 }
             }
             if (allPermissionGranted) {
+                //if the permissions are accepted, check for GPS
                 checkIfGpsEnabledAndStartService()
+            }else{
+                //if the permissions are denied constantly, it will
+                //default give false at that time take user to settings screen
+                handlePermissionDenied()
             }
         }
     }
 
+
+    //if the permissions are denied constantly, it will
+    //default give false, to handle this
+    //we need to take user to app's settings
+    private fun handlePermissionDenied() {
+        val dialogClickListener =
+            DialogInterface.OnClickListener { dialog, which ->
+                when (which) {
+                    DialogInterface.BUTTON_POSITIVE -> {
+                        dialog.dismiss()
+                        openedSettings = true
+                        startActivity(Intent().apply {
+                            action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            data = Uri.fromParts("package", this@GoogleMapsFragment.context?.packageName, null)
+                        })
+                    }
+                    DialogInterface.BUTTON_NEGATIVE -> {
+                        dialog.dismiss()
+                        geoFenceViewModel.sendError(getString(R.string.please_grant_permission_all))
+                    }
+                }
+            }
+
+        val builder: AlertDialog.Builder? = context?.let { AlertDialog.Builder(it) }
+        builder?.setMessage(getString(R.string.please_grant_permission_all))
+            ?.setPositiveButton(getString(R.string.common_ok), dialogClickListener)
+            ?.setNegativeButton(getString(R.string.common_cancel), dialogClickListener)?.show()
+    }
+
+
     override fun onDestroy() {
+        //on destroy clear the map
+        //also remove the geofence that was registered
+        //remove helper and geoFence
         mMap?.clear()
         geofenceHelper?.geofencePendingIntent?.let { geofencingClient?.removeGeofences(it) }
         geofenceHelper = null
         geoFence = null
+
         super.onDestroy()
     }
 
-    companion object {
-        private const val TAG = "LandingFragment"
 
-
+    override fun onResume() {
+        super.onResume()
+        if (openedSettings){
+            //if the app settings was opened this will check the permissions once again and start the flow
+            openedSettings =  false
+            checkPermission(true)
+        }
     }
 }
+

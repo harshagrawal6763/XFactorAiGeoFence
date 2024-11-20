@@ -14,6 +14,7 @@
     <string name="google_maps_approach">Google Maps Approach</string>
     <string name="services_approach">Service Approach</string>
     <string name="please_grant_permission">Please grant location permission as &quot;Allow all the time&quot; to enable geofencing features.</string>
+    <string name="please_grant_permission_all">Please grant all permissions as to enable geofencing features.</string>
     <string name="common_ok">Okay</string>
 
 </resources>

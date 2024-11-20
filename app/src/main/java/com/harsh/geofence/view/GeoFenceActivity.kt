@@ -7,10 +7,13 @@ import androidx.navigation.findNavController
 import com.harsh.geofence.R
 
 class GeoFenceActivity : AppCompatActivity() {
+
+    //the navigation controller which hosts all the fragments
     private var navController = lazy {
         findNavController(R.id.nav_host_container)
     }
 
+    //if we need instance if this navController
     fun getNavigationController(): NavController {
         return navController.value
     }

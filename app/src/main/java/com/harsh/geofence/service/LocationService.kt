@@ -26,17 +26,35 @@ import com.harsh.geofence.consts.GeoConsts.GEOFENCE_RADIUS
 
 import com.harsh.geofence.viewmodel.GeoFenceViewModel
 
+/*this Location Service is used to keep the location updates enabled in background
+* as the geofence api requires some kind of location updates, if we use no UI approach
+* by only using button, it is needed that a service constantly checks for the location updates and
+* handles the event broadcast when the geofence api triggers through GeofenceBroadcastReceiver
+* */
 class LocationService : Service() {
 
+    //the location client responsible for location updates
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var geofencingClient: GeofencingClient
+
+    //the callback where the location updates are triggered
+    //please note, this will be triggered even when the user moves,
+    // not necessarily in or out of the fence
     private lateinit var locationCallback: LocationCallback
 
+    //the viewmodel instance to handle error or location trigger events
     var viewModel: GeoFenceViewModel?=null
 
-
+    //the helper used for generating geofencing request
     var geofenceHelper : GeofenceHelper?=null
 
+    //the geofencing client that will add the geofence
+    private lateinit var geofencingClient: GeofencingClient
+
+    /*gets the GeofencingRequest and requires instance of Geofence
+   * adds the initial trigger as INITIAL_TRIGGER_ENTER
+   * and using builder patterns, builds the request and gives an instance of
+   * GeofencingRequest
+   * */
     private val geofenceRequest: GeofencingRequest by lazy {
         val geofence = Geofence.Builder()
             .setRequestId(GEOFENCE_ID)
@@ -54,10 +72,16 @@ class LocationService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+        //init the geofence helper
         geofenceHelper = GeofenceHelper(this)
+
+        //init the location client
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //init the geofence client
         geofencingClient = LocationServices.getGeofencingClient(this)
 
+        //init the view model instance if not instantiated
         if (viewModel == null){
             viewModel = (this.applicationContext.applicationContext as? GeoFenceApplication)?.geoFenceViewModel
         }
@@ -88,6 +112,8 @@ class LocationService : Service() {
     }
 
     @SuppressLint("MissingPermission")
+    //the suppress lint is added as the permission
+    // check will be done by fragment and then the service could run
     private fun startLocationUpdates(locationRequest: LocationRequest) {
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
     }
@@ -95,6 +121,8 @@ class LocationService : Service() {
     @SuppressLint("MissingPermission")
     private fun registerGeofence() {
         // Register the geofence with GeofencingClient
+        //the suppress lint is added as the permission
+        // check will be done by fragment and then the service could run
         geofenceHelper?.geofencePendingIntent?.let {
             geofencingClient.addGeofences(geofenceRequest, it).run {
                 addOnSuccessListener {
@@ -136,14 +164,24 @@ class LocationService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
+        //no need for binder here
         return null
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        //once service is about to destroy
+
+        //remove the location updates
         fusedLocationClient.removeLocationUpdates(locationCallback)
+
+        //remove the geofence
         geofenceHelper?.geofencePendingIntent?.let { geofencingClient.removeGeofences(it) }
+
+        //set the geofenceHelper as null
         geofenceHelper = null
+
+        //remove the service and dismiss notification
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 }
