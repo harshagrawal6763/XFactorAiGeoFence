@@ -60,9 +60,10 @@ Step-by-Step User Flow
 9. Ongoing Geofence Monitoring:
     - This approach does not require a continuous foreground service. Instead, Google Maps maintains location updates, and the geofence is managed through the Google Location API, minimizing battery usage.
 
-![Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/GoogleMapsFlow.png)
+![Map Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/GoogleMapsFlow.png)
 
-![1](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/11.jpeg) ![2](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/12.jpeg) ![3](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/13.jpeg) ![4](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/14.jpeg) ![5](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/15.jpeg) ![6](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/16.jpeg)
+[View the gmap folder](https://github.com/harshagrawal6763/XFactorAiGeoFence/tree/main/gmap)
+
 
 
 Additional Notes
@@ -111,6 +112,11 @@ Step-by-Step User Flow
 8. Background Operation:
     - Even if the app is minimized, the foreground service continues running to maintain geofence monitoring.
     - The service stops either when the user manually turns off geofencing or when the app is killed.
+
+
+![Service Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/service/LocationServiceUserFlow.png)
+
+[View the service folder](https://github.com/harshagrawal6763/XFactorAiGeoFence/tree/main/service)
 
 
 For updating the default location and radius, please update com.harsh.geofence.consts.GeoConsts file. 
