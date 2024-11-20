@@ -66,7 +66,7 @@ Step-by-Step User Flow
 
 This folder also contains a video that demonstrates the event trigger when the user enters the geofence.
 
-![Map Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/gMapVideo.mp4)
+![Map Flow](https://github.com/harshagrawal6763/XFactorAiGeoFence/blob/main/gmap/gmapVideo.mp4)
 
 
 
